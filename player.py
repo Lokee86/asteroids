@@ -1,6 +1,7 @@
 import pygame
 from circleshape import CircleShape
 from constants import *
+from sound import *
 
 class Player(CircleShape):
     def __init__(self, x, y, radius, image_path):
@@ -49,6 +50,7 @@ class Player(CircleShape):
 
     def shoot(self, position):
         if self.shot_cooldown <= 0:
+            laser_sound.play()
             self.shot_cooldown += PLAYER_SHOT_COOLDOWN
             shot = Shot(position.x, position.y, SHOT_RADIUS, self.rotation)
             shot_direction = pygame.Vector2(0, -1).rotate(-self.rotation)
