@@ -4,9 +4,23 @@ from asteroid import Asteroid
 from asteroidfield import AsteroidField
 from player import *
 
+print("Starting asteroids!")
+pygame.init()
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+
+def reset_game(player, asteroids, shots, updateable, drawable):
+    """Resets the game state for a replay."""
+    Player.containers[0].empty()  # updateable
+    Player.containers[1].empty()  # drawable
+    Shot.containers[0].empty()    # updateable
+    Shot.containers[1].empty()    # shots
+    Asteroid.containers[0].empty()  # updateable
+    Asteroid.containers[1].empty()  # drawable
+    Asteroid.containers[2].empty()  # asteroids
+
+    main()
+
 def main():
-    print("Starting asteroids!")
-    pygame.init()
     clock = pygame.time.Clock()
     dt = 0.0
     
@@ -24,7 +38,7 @@ def main():
     Asteroid.containers = (updateable, drawable, asteroids)
     AsteroidField.containers = (updateable,)
     
-    screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+    
     player = Player((SCREEN_WIDTH / 2),(SCREEN_HEIGHT / 2), PLAYER_RADIUS, "player.png")
     asteroid_field = AsteroidField()
 
@@ -35,6 +49,9 @@ def main():
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                return
+            if game_over_check and event.type == pygame.KEYDOWN and event.key == pygame.K_r:
+                reset_game(player, asteroids, shots, updateable, drawable)  # Reset the game if "R" is pressed
                 return
         screen.fill("black")
         
@@ -80,6 +97,11 @@ def main():
             x2 = (SCREEN_WIDTH // 2) - (game_over_msg2.get_width() // 2)
             y2 = (SCREEN_HEIGHT // 2)
             screen.blit(game_over_msg2, (x2, y2))
+
+            replay_text = font.render("Press R to Replay", False, "white")
+            replay_rect = replay_text.get_rect()
+            replay_rect.center = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 130)
+            screen.blit(replay_text, replay_rect)
 
 
         pygame.display.flip()
