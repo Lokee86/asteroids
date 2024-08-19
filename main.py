@@ -8,6 +8,12 @@ print("Starting asteroids!")
 pygame.init()
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
+explosion_frames = []
+for i in range(0, 12):
+    image = pygame.image.load(f"explosion{i}.png").convert_alpha()
+    image = pygame.transform.scale(image, (3.5 * PLAYER_RADIUS, 3.5 * PLAYER_RADIUS))
+    explosion_frames.append(image)
+
 def reset_game(player, asteroids, shots, updateable, drawable):
     """Resets the game state for a replay."""
     Player.containers[0].empty()  # updateable
@@ -24,6 +30,7 @@ def main():
     clock = pygame.time.Clock()
     dt = 0.0
     death_time = None
+    rock_death.set_volume(0.5)
     
     pygame.font.init()
     font = pygame.font.Font(None, 36)
@@ -45,6 +52,10 @@ def main():
 
     game_over_check = False
     game_over_sound = False
+    explosion_active = False
+    explosion_index = 0
+    explosion_start_time = None
+
 
     print(f"Screen width: {SCREEN_WIDTH}")
     print(f"Screen height: {SCREEN_HEIGHT}")
@@ -78,16 +89,40 @@ def main():
                 if player.collision_check(asteroid):
                     print("Game over!")
                     print(player.score)
-                    player.kill()
                     ship_death.play()
                     death_time = pygame.time.get_ticks()
+                    explosion_active = True
+                    explosion_start_time = pygame.time.get_ticks()
                     game_over_check = True
+                    player.kill()
+
                 
                 for shot in shots:
                     if asteroid.collision_check(shot):
                         player.score += asteroid.split()
                         shot.kill()
         
+        if explosion_active:
+            current_time = pygame.time.get_ticks()
+            
+            # Calculate the time passed since the explosion started
+            elapsed_time = current_time - explosion_start_time
+            
+            # Assume each frame should be shown for 100 milliseconds
+            frame_duration = 100
+            explosion_index = elapsed_time // frame_duration
+            
+            if explosion_index < len(explosion_frames):
+                # Display the current explosion frame
+                explosion_frame = explosion_frames[explosion_index]
+                explosion_rect = explosion_frame.get_rect(center=player.rect.center)
+                screen.blit(explosion_frame, explosion_rect.topleft)  # Position it where the player was
+            else:
+                # Explosion animation is done
+                explosion_active = False
+                # Continue with the game over logic
+
+
         if game_over_check:
             current_time = pygame.time.get_ticks()
             if current_time - death_time > 1100:
