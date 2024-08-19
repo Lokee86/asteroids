@@ -17,3 +17,6 @@ class Asteroid(CircleShape):
 
     def draw(self, screen):
         screen.blit(self.image, self.rect)
+
+    def split(self):
+        self.kill()

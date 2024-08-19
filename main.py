@@ -32,6 +32,7 @@ def main():
         screen.fill("black")
         for obj in updateable:
             obj.update(dt)
+            
         
         for shot in shots:
             shot.draw(screen)
@@ -44,6 +45,10 @@ def main():
             if player.collision_check(asteroid):
                 print("Game over!")
                 return
+            for shot in shots:
+                if asteroid.collision_check(shot):
+                    asteroid.split()
+                    shot.kill()
 
         dt = (clock.tick(60) / 1000)
         

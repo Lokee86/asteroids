@@ -10,6 +10,7 @@ class Player(CircleShape):
         self.image = self.original_image  # Store the original image to avoid degradation over transformations
         self.rect = self.image.get_rect(center=(x, y))
         self.rotation = 0
+        self.shot_cooldown = PLAYER_SHOT_COOLDOWN
 
     def update(self, dt):
         keys = pygame.key.get_pressed()
@@ -26,8 +27,12 @@ class Player(CircleShape):
         
         self.image = pygame.transform.rotate(self.original_image, self.rotation)
         self.rect = self.image.get_rect(center=self.rect.center)
-    
         self.rect.center = self.position
+        
+        if self.shot_cooldown > 0:
+            self.shot_cooldown -= dt
+        if self.shot_cooldown < 0:
+            self.shot_cooldown = 0
 
     def rotate(self, dt):
         self.rotation += PLAYER_TURN_SPEED * dt
@@ -43,9 +48,11 @@ class Player(CircleShape):
         screen.blit(self.image, self.rect)
 
     def shoot(self, position):
-        shot = Shot(position.x, position.y, SHOT_RADIUS, self.rotation)
-        shot_direction = pygame.Vector2(0, -1).rotate(-self.rotation)
-        shot.velocity = shot_direction * PLAYER_SHOOT_SPEED
+        if self.shot_cooldown <= 0:
+            self.shot_cooldown += PLAYER_SHOT_COOLDOWN
+            shot = Shot(position.x, position.y, SHOT_RADIUS, self.rotation)
+            shot_direction = pygame.Vector2(0, -1).rotate(-self.rotation)
+            shot.velocity = shot_direction * PLAYER_SHOOT_SPEED
 
 
 class Shot(CircleShape):
