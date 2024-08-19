@@ -6,7 +6,7 @@ class Player(CircleShape):
     def __init__(self, x, y, radius, image_path):
         super().__init__(x, y, radius)
         self.original_image = pygame.image.load(image_path).convert_alpha()
-        self.original_image = pygame.transform.scale(self.original_image, (2 * radius, 2 * radius))
+        self.original_image = pygame.transform.scale(self.original_image, (2.5 * radius, 2.5 * radius))
         self.image = self.original_image  # Store the original image to avoid degradation over transformations
         self.rect = self.image.get_rect(center=(x, y))
         self.rotation = 0
@@ -21,6 +21,8 @@ class Player(CircleShape):
             self.move(dt)
         if keys[pygame.K_s] or keys[pygame.K_DOWN]:
             self.move(dt * -1)
+        if keys[pygame.K_SPACE]:
+            self.shoot(self.position)
         
         self.image = pygame.transform.rotate(self.original_image, self.rotation)
         self.rect = self.image.get_rect(center=self.rect.center)
@@ -40,3 +42,24 @@ class Player(CircleShape):
     def draw(self, screen):
         screen.blit(self.image, self.rect)
 
+    def shoot(self, position):
+        shot = Shot(position.x, position.y, SHOT_RADIUS, self.rotation)
+        shot_direction = pygame.Vector2(0, -1).rotate(-self.rotation)
+        shot.velocity = shot_direction * PLAYER_SHOOT_SPEED
+
+
+class Shot(CircleShape):
+    def __init__(self, x, y, radius, angle):
+        super().__init__(x, y, radius)
+        original_image = pygame.image.load("bullet.png").convert_alpha()
+        self.image = pygame.transform.scale(original_image, (3 * radius, 3 * radius))
+        self.velocity = pygame.Vector2(x, y)
+        self.image = pygame.transform.rotate(self.image, angle)
+        self.rect = self.image.get_rect(center=(x, y))
+
+    def update(self, dt):
+        self.position += (self.velocity * dt)
+        self.rect.center = self.position
+
+    def draw(self, screen):
+        screen.blit(self.image, self.rect)
