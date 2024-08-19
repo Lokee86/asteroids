@@ -8,11 +8,17 @@ print("Starting asteroids!")
 pygame.init()
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
-explosion_frames = []
+player_explosion_frames = []
 for i in range(0, 12):
     image = pygame.image.load(f"explosion{i}.png").convert_alpha()
     image = pygame.transform.scale(image, (3.5 * PLAYER_RADIUS, 3.5 * PLAYER_RADIUS))
-    explosion_frames.append(image)
+    player_explosion_frames.append(image)
+shot_explosion_frames = []
+for i in range(0, 12):
+    image = pygame.image.load(f"explosion{i}.png").convert_alpha()
+    image = pygame.transform.scale(image, (3.5 * SHOT_RADIUS, 3.5 * SHOT_RADIUS))
+    shot_explosion_frames.append(image)
+
 
 def reset_game(player, asteroids, shots, updateable, drawable):
     """Resets the game state for a replay."""
@@ -52,9 +58,10 @@ def main():
 
     game_over_check = False
     game_over_sound = False
-    explosion_active = False
+    player_explosion_active = False
     explosion_index = 0
     explosion_start_time = None
+    shot_explosions = []
 
 
     print(f"Screen width: {SCREEN_WIDTH}")
@@ -91,7 +98,7 @@ def main():
                     print(player.score)
                     ship_death.play()
                     death_time = pygame.time.get_ticks()
-                    explosion_active = True
+                    player_explosion_active = True
                     explosion_start_time = pygame.time.get_ticks()
                     game_over_check = True
                     player.kill()
@@ -101,27 +108,40 @@ def main():
                     if asteroid.collision_check(shot):
                         player.score += asteroid.split()
                         shot.kill()
+                        shot_explosions.append({"position": shot.rect.center, "start_time": pygame.time.get_ticks(), "active": True})
         
-        if explosion_active:
+        if player_explosion_active:
             current_time = pygame.time.get_ticks()
             
             # Calculate the time passed since the explosion started
             elapsed_time = current_time - explosion_start_time
             
             # Assume each frame should be shown for 100 milliseconds
-            frame_duration = 100
-            explosion_index = elapsed_time // frame_duration
+            explosion_index = elapsed_time // FRAME_DURATION
             
-            if explosion_index < len(explosion_frames):
+            if explosion_index < len(player_explosion_frames):
                 # Display the current explosion frame
-                explosion_frame = explosion_frames[explosion_index]
+                explosion_frame = player_explosion_frames[explosion_index]
                 explosion_rect = explosion_frame.get_rect(center=player.rect.center)
                 screen.blit(explosion_frame, explosion_rect.topleft)  # Position it where the player was
             else:
                 # Explosion animation is done
-                explosion_active = False
+                player_explosion_active = False
                 # Continue with the game over logic
 
+        for explosion in shot_explosions:
+            if explosion["active"]:
+                current_time = pygame.time.get_ticks()
+                elapsed_time = current_time - explosion["start_time"]
+                explosion_index = elapsed_time // 25
+
+                if explosion_index < len(shot_explosion_frames):
+                    explosion_frame = shot_explosion_frames[explosion_index]
+                    explosion_rect = explosion_frame.get_rect(center=explosion["position"])
+                    screen.blit(explosion_frame, explosion_rect.topleft)
+                else:
+                    explosion["active"] = False  # Mark the explosion as done
+        shot_explosions = [explosion for explosion in shot_explosions if explosion["active"]]
 
         if game_over_check:
             current_time = pygame.time.get_ticks()
