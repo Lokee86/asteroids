@@ -23,6 +23,7 @@ def reset_game(player, asteroids, shots, updateable, drawable):
 def main():
     clock = pygame.time.Clock()
     dt = 0.0
+    death_time = None
     
     pygame.font.init()
     font = pygame.font.Font(None, 36)
@@ -43,6 +44,7 @@ def main():
     asteroid_field = AsteroidField()
 
     game_over_check = False
+    game_over_sound = False
 
     print(f"Screen width: {SCREEN_WIDTH}")
     print(f"Screen height: {SCREEN_HEIGHT}")
@@ -78,8 +80,7 @@ def main():
                     print(player.score)
                     player.kill()
                     ship_death.play()
-                    pygame.time.wait(1100)
-                    game_over.play()
+                    death_time = pygame.time.get_ticks()
                     game_over_check = True
                 
                 for shot in shots:
@@ -88,20 +89,25 @@ def main():
                         shot.kill()
         
         if game_over_check:
-            game_over_msg1 = font2.render("GAME", False, "red")
-            x1 = (SCREEN_WIDTH // 2) - (game_over_msg1.get_width() // 2)
-            y1 = (SCREEN_HEIGHT // 2) - (game_over_msg1.get_height())
-            screen.blit(game_over_msg1, (x1, y1))
+            current_time = pygame.time.get_ticks()
+            if current_time - death_time > 1100:
+                if not game_over_sound:
+                    game_over.play()
+                    game_over_sound = True
+                game_over_msg1 = font2.render("GAME", False, "red")
+                x1 = (SCREEN_WIDTH // 2) - (game_over_msg1.get_width() // 2)
+                y1 = (SCREEN_HEIGHT // 2) - (game_over_msg1.get_height())
+                screen.blit(game_over_msg1, (x1, y1))
 
-            game_over_msg2 = font2.render("OVER!", False, "red")
-            x2 = (SCREEN_WIDTH // 2) - (game_over_msg2.get_width() // 2)
-            y2 = (SCREEN_HEIGHT // 2)
-            screen.blit(game_over_msg2, (x2, y2))
+                game_over_msg2 = font2.render("OVER!", False, "red")
+                x2 = (SCREEN_WIDTH // 2) - (game_over_msg2.get_width() // 2)
+                y2 = (SCREEN_HEIGHT // 2)
+                screen.blit(game_over_msg2, (x2, y2))
 
-            replay_text = font.render("Press R to Replay", False, "white")
-            replay_rect = replay_text.get_rect()
-            replay_rect.center = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 130)
-            screen.blit(replay_text, replay_rect)
+                replay_text = font.render("Press R to Replay", False, "white")
+                replay_rect = replay_text.get_rect()
+                replay_rect.center = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 130)
+                screen.blit(replay_text, replay_rect)
 
 
         pygame.display.flip()
