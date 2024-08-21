@@ -3,14 +3,6 @@ from constants import *
 import random
 from sound.sound import *
 
-asteroid_masks = {}
-for asteroid_type in range(1, 5):
-    asteroid_masks[asteroid_type] = {}
-    masking_image = pygame.image.load(f"graphics/asteroid{asteroid_type}.png").convert_alpha()
-    for size in range(1, ASTEROID_KINDS + 1):
-        scaled_image = pygame.transform.scale(masking_image, ((size * ASTEROID_MIN_RADIUS) * 1.8, (size * ASTEROID_MIN_RADIUS) * 1.8))
-        asteroid_masks[asteroid_type][size] = pygame.mask.from_surface(scaled_image)
-
 class Asteroid(CircleShape):
     def __init__(self, x, y, radius):
         super().__init__(x, y, radius)
@@ -29,19 +21,8 @@ class Asteroid(CircleShape):
         
         self.angle = pygame.Vector2(0, -1).angle_to(self.velocity)
         self.image = pygame.transform.rotate(self.image, self.angle)
-        self.mask = asteroid_masks[random_rock[1]][self.size_index]
-        self.mask_image = self.mask.to_surface(setcolor=(0, 255, 0, 100), unsetcolor=(0, 0, 0, 0))
+        self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect(center=(x, y))
-        
-        
-        # self.original_image = pygame.image.load("graphics/OrangeScale__000.png").convert_alpha()
-        # self.image = pygame.transform.scale(self.original_image, (0.33 * radius, 1.05 * radius))
-        # self.velocity = pygame.Vector2(x, y)
-        
-        # self.image = pygame.transform.rotate(self.image, angle)
-        # self.mask =  pygame.mask.from_surface(self.image)
-        # self.mask_image = self.mask.to_surface(setcolor=(0, 255, 0, 100), unsetcolor=(0, 0, 0, 0))
-        # self.rect = self.image.get_rect(center=(x, y))
 
 
     def update(self, dt):
@@ -50,9 +31,6 @@ class Asteroid(CircleShape):
 
     def draw(self, screen):
         screen.blit(self.image, self.rect)
-        pygame.draw.circle(screen, (0, 255, 0), (int(self.position.x), int(self.position.y)), self.radius, 1)
-        mask_position = (self.rect.x, self.rect.y)
-        screen.blit(self.mask_image, mask_position)
 
     def split(self):
         self.kill()

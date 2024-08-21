@@ -17,7 +17,7 @@ for i in range(0, 11):
 shot_explosion_frames = []
 for i in range(1, 7):
     image = pygame.image.load(f"graphics/OrangeBulletExplo ({i}).png").convert_alpha()
-    image = pygame.transform.scale(image, (3.5 * SHOT_RADIUS, 3.5 * SHOT_RADIUS))
+    image = pygame.transform.scale(image, (2 * SHOT_RADIUS, 2 * SHOT_RADIUS))
     shot_explosion_frames.append(image)
 
 def pause_game():
