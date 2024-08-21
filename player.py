@@ -6,6 +6,7 @@ from sound.sound import *
 class Player(CircleShape):
     def __init__(self, x, y, radius, image_path):
         super().__init__(x, y, radius)
+        self.position = pygame.Vector2(x, y)
         self.original_image = pygame.image.load(image_path).convert_alpha()
         self.original_image = pygame.transform.scale(self.original_image, (1.85 * radius, 1.85 * radius))
         self.image = self.original_image
@@ -51,6 +52,8 @@ class Player(CircleShape):
 
     def draw(self, screen):
         screen.blit(self.image, self.rect)
+        # debugging line draws hit-box
+        # pygame.draw.circle(screen, (0, 255, 0), (int(self.position.x), int(self.position.y)), self.radius, 1)
 
     def shoot(self, position):
         if self.shot_cooldown <= 0:

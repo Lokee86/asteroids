@@ -31,6 +31,9 @@ class Asteroid(CircleShape):
 
     def draw(self, screen):
         screen.blit(self.image, self.rect)
+        # debugging line draws hit-box
+        # pygame.draw.circle(screen, (0, 255, 0), (int(self.position.x), int(self.position.y)), self.radius, 1)
+
 
     def split(self):
         self.kill()
