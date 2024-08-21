@@ -76,7 +76,7 @@ def main():
                 exit()
             
             elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_p:  # Press 'P' to initiate pause
+                if event.key == pygame.K_p or event.key == pygame.K_t:  # Press 'P' or 'T'(timeout) to initiate pause
                     paused = not paused
 
                 if game_over_check and event.key == pygame.K_r:

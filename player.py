@@ -13,8 +13,7 @@ class Player(CircleShape):
         self.mask = pygame.mask.from_surface(self.image)
         self.rotation = 0
         self.shot_cooldown = PLAYER_SHOT_COOLDOWN
-        self.score = 0
-        self.position = pygame.Vector2(x, y)  # Ensure position is correctly initialized
+        self.score = 0  
 
     def update(self, dt):
         keys = pygame.key.get_pressed()
