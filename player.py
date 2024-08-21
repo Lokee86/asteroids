@@ -6,7 +6,6 @@ from sound.sound import *
 class Player(CircleShape):
     def __init__(self, x, y, radius, image_path):
         super().__init__(x, y, radius)
-        self.position = pygame.Vector2(x, y)
         self.original_image = pygame.image.load(image_path).convert_alpha()
         self.original_image = pygame.transform.scale(self.original_image, (1.85 * radius, 1.85 * radius))
         self.image = self.original_image
@@ -15,6 +14,7 @@ class Player(CircleShape):
         self.rotation = 0
         self.shot_cooldown = PLAYER_SHOT_COOLDOWN
         self.score = 0
+        self.position = pygame.Vector2(x, y)  # Ensure position is correctly initialized
 
     def update(self, dt):
         keys = pygame.key.get_pressed()
@@ -34,25 +34,29 @@ class Player(CircleShape):
         if self.shot_cooldown < 0:
             self.shot_cooldown = 0
 
+        # Rotate the player image
         self.image = pygame.transform.rotate(self.original_image, self.rotation)
-        self.rect = self.image.get_rect(center=self.rect.center)
-        self.rect.center = self.position
+        self.rect = self.image.get_rect(center=self.position)
         
+        # Update the mask after rotation
         self.mask = pygame.mask.from_surface(self.image)
 
     def rotate(self, dt):
         self.rotation += PLAYER_TURN_SPEED * dt
         # Rotate image around its center
         self.image = pygame.transform.rotate(self.original_image, self.rotation)
-        self.rect = self.image.get_rect(center=self.rect.center)
+        self.rect = self.image.get_rect(center=self.position)
     
     def move(self, dt):
         forward = pygame.Vector2(0, -1).rotate(-self.rotation)
         self.position += forward * PLAYER_SPEED * dt
+        self.rect.center = self.position  # Ensure rect center matches the position
 
     def draw(self, screen):
+        # Draw the player's image
         screen.blit(self.image, self.rect)
-        # debugging line draws hit-box
+
+        # Draw the green circle around the player's image for debugging
         # pygame.draw.circle(screen, (0, 255, 0), (int(self.position.x), int(self.position.y)), self.radius, 1)
 
     def shoot(self, position):
@@ -62,7 +66,6 @@ class Player(CircleShape):
             shot = Shot(position.x, position.y, SHOT_RADIUS, self.rotation)
             shot_direction = pygame.Vector2(0, -1).rotate(-self.rotation)
             shot.velocity = shot_direction * PLAYER_SHOOT_SPEED
-
 
 class Shot(CircleShape):
     def __init__(self, x, y, radius, angle):

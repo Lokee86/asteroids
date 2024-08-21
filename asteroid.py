@@ -31,7 +31,7 @@ class Asteroid(CircleShape):
 
     def draw(self, screen):
         screen.blit(self.image, self.rect)
-        # debugging line draws hit-box
+        # Draw the green circle around the asteroid image for debugging
         # pygame.draw.circle(screen, (0, 255, 0), (int(self.position.x), int(self.position.y)), self.radius, 1)
 
 
