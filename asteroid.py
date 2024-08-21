@@ -33,7 +33,7 @@ class Asteroid(CircleShape):
         
         self.rect = self.image.get_rect(center=(x, y))
         
-        self.mask = asteroid_masks[random_rock[1]][self.size_index]
+        self.mask = asteroid_masks[random_rock[1]][self.size_index].transform.rotate(self.image, self.angle)
         self.mask_image = self.mask.to_surface(setcolor=(0, 255, 0, 100), unsetcolor=(0, 0, 0, 0))
 
     def update(self, dt):

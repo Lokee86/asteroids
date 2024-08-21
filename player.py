@@ -30,21 +30,27 @@ class Player(CircleShape):
             self.shoot(self.position)
         
         self.image = pygame.transform.rotate(self.original_image, self.rotation)
+        self.mask = pygame.transform.rotate(self.original_image, self.rotation)
         self.rect = self.image.get_rect(center=self.rect.center)
         self.rect.center = self.position
-        self.mask = pygame.mask.from_surface(self.image)
         
+
+
         if self.shot_cooldown > 0:
             self.shot_cooldown -= dt
         if self.shot_cooldown < 0:
             self.shot_cooldown = 0
+        
+        self.mask = pygame.mask.from_surface(self.image)
 
     def rotate(self, dt):
         self.rotation += PLAYER_TURN_SPEED * dt
         # Rotate image around its center
         self.image = pygame.transform.rotate(self.original_image, self.rotation)
+        self.mask = pygame.transform.rotate(self.original_image, self.rotation)
         self.rect = self.image.get_rect(center=self.rect.center)
-
+        self.mask = pygame.mask.from_surface(self.image)
+    
     def move(self, dt):
         forward = pygame.Vector2(0, -1).rotate(-self.rotation)
         self.position += forward * PLAYER_SPEED * dt
