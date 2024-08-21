@@ -1,21 +1,23 @@
 import pygame
 from constants import *
-from asteroid import Asteroid
-from asteroidfield import AsteroidField
-from player import *
-
 print("Starting asteroids!")
 pygame.init()
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+background = pygame.image.load("graphics/background.png").convert_alpha()
+from asteroid import Asteroid
 
+from asteroidfield import AsteroidField
+from player import *
+
+# Load animations
 player_explosion_frames = []
-for i in range(0, 12):
-    image = pygame.image.load(f"explosion{i}.png").convert_alpha()
+for i in range(0, 11):
+    image = pygame.image.load(f"graphics/Explo__00{i}.png").convert_alpha()
     image = pygame.transform.scale(image, (3.5 * PLAYER_RADIUS, 3.5 * PLAYER_RADIUS))
     player_explosion_frames.append(image)
 shot_explosion_frames = []
-for i in range(0, 12):
-    image = pygame.image.load(f"explosion{i}.png").convert_alpha()
+for i in range(1, 7):
+    image = pygame.image.load(f"graphics/OrangeBulletExplo ({i}).png").convert_alpha()
     image = pygame.transform.scale(image, (3.5 * SHOT_RADIUS, 3.5 * SHOT_RADIUS))
     shot_explosion_frames.append(image)
 
@@ -36,7 +38,7 @@ def main():
     clock = pygame.time.Clock()
     dt = 0.0
     death_time = None
-    rock_death.set_volume(0.5)
+    
     
     pygame.font.init()
     font = pygame.font.Font(None, 36)
@@ -53,7 +55,7 @@ def main():
     AsteroidField.containers = (updateable,)
     
     
-    player = Player((SCREEN_WIDTH / 2),(SCREEN_HEIGHT / 2), PLAYER_RADIUS, "player.png")
+    player = Player((SCREEN_WIDTH / 2),(SCREEN_HEIGHT / 2), PLAYER_RADIUS, "graphics/player.png")
     asteroid_field = AsteroidField()
 
     game_over_check = False
@@ -73,7 +75,12 @@ def main():
             if game_over_check and event.type == pygame.KEYDOWN and event.key == pygame.K_r:
                 reset_game(player, asteroids, shots, updateable, drawable)  # Reset the game if "R" is pressed
                 return
+        
         screen.fill("black")
+        for x in range(0, SCREEN_WIDTH, background.get_size()[0]):
+            for y in range(0, SCREEN_HEIGHT, background.get_size()[1]):
+                screen.blit(background, (x, y))
+
         
         for obj in updateable:
             obj.update(dt)
@@ -133,7 +140,7 @@ def main():
             if explosion["active"]:
                 current_time = pygame.time.get_ticks()
                 elapsed_time = current_time - explosion["start_time"]
-                explosion_index = elapsed_time // 25
+                explosion_index = elapsed_time // (FRAME_DURATION // 2)
 
                 if explosion_index < len(shot_explosion_frames):
                     explosion_frame = shot_explosion_frames[explosion_index]

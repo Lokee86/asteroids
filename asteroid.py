@@ -1,12 +1,28 @@
 from circleshape import *
 from constants import *
 import random
-from sound import *
+from sound.sound import *
+
+asteroid_masks = {}
+for asteroid_type in range(1, 5):
+    asteroid_masks[asteroid_type] = {}
+    masking_image = pygame.image.load(f"graphics/asteroid{asteroid_type}.png").convert_alpha()
+    for size in range(1, ASTEROID_KINDS + 1):
+        scaled_image = pygame.transform.scale(masking_image, ((size * ASTEROID_MIN_RADIUS) * 2, (size * ASTEROID_MIN_RADIUS) * 2))
+        asteroid_masks[asteroid_type][size] = pygame.mask.from_surface(scaled_image)
 
 class Asteroid(CircleShape):
     def __init__(self, x, y, radius):
         super().__init__(x, y, radius)
-        original_image = pygame.image.load("asteroid.png").convert_alpha()
+
+        asteroid_images = [
+            "graphics/asteroid1.png",
+            "graphics/asteroid2.png",
+            "graphics/asteroid3.png",
+            "graphics/asteroid4.png"
+        ]
+        random_rock = random.choice(asteroid_images)
+        original_image = pygame.image.load(random_rock).convert_alpha()
         self.image = pygame.transform.scale(original_image, (2 * radius, 2 * radius))
         self.velocity = pygame.Vector2(x, y)
         angle = pygame.Vector2(0, -1).angle_to(self.velocity)

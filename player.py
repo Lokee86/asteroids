@@ -1,14 +1,15 @@
 import pygame
 from circleshape import CircleShape
 from constants import *
-from sound import *
+from sound.sound import *
 
 class Player(CircleShape):
     def __init__(self, x, y, radius, image_path):
         super().__init__(x, y, radius)
         self.original_image = pygame.image.load(image_path).convert_alpha()
         self.original_image = pygame.transform.scale(self.original_image, (2.5 * radius, 2.5 * radius))
-        self.image = self.original_image  # Store the original image to avoid degradation over transformations
+        self.image = self.original_image
+        self.mask = pygame.mask.from_surface(self.image) 
         self.rect = self.image.get_rect(center=(x, y))
         self.rotation = 0
         self.shot_cooldown = PLAYER_SHOT_COOLDOWN
@@ -61,8 +62,9 @@ class Player(CircleShape):
 class Shot(CircleShape):
     def __init__(self, x, y, radius, angle):
         super().__init__(x, y, radius)
-        original_image = pygame.image.load("bullet.png").convert_alpha()
-        self.image = pygame.transform.scale(original_image, (3 * radius, 3 * radius))
+        self.original_image = pygame.image.load("graphics/OrangeScale__000.png").convert_alpha()
+        self.image = pygame.transform.scale(self.original_image, (1 * radius, 3 * radius))
+        self.mask =  pygame.mask.from_surface(self.original_image)
         self.velocity = pygame.Vector2(x, y)
         self.image = pygame.transform.rotate(self.image, angle)
         self.rect = self.image.get_rect(center=(x, y))
