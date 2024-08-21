@@ -23,18 +23,26 @@ class Asteroid(CircleShape):
             ("graphics/asteroid4.png", 4),
         ]
         random_rock = random.choice(asteroid_images)
-        original_image = pygame.image.load(random_rock[0]).convert_alpha()
-        self.image = pygame.transform.scale(original_image, (1.8 * radius, 1.8 * radius))
-        
+        self.original_image = pygame.image.load(random_rock[0]).convert_alpha()
+        self.image = pygame.transform.scale(self.original_image, (1.8 * radius, 1.8 * radius))
         self.velocity = pygame.Vector2(x, y)
+        
         self.angle = pygame.Vector2(0, -1).angle_to(self.velocity)
-        
         self.image = pygame.transform.rotate(self.image, self.angle)
-        
+        self.mask = asteroid_masks[random_rock[1]][self.size_index]
+        self.mask_image = self.mask.to_surface(setcolor=(0, 255, 0, 100), unsetcolor=(0, 0, 0, 0))
         self.rect = self.image.get_rect(center=(x, y))
         
-        self.mask = asteroid_masks[random_rock[1]][self.size_index].transform.rotate(self.image, self.angle)
-        self.mask_image = self.mask.to_surface(setcolor=(0, 255, 0, 100), unsetcolor=(0, 0, 0, 0))
+        
+        # self.original_image = pygame.image.load("graphics/OrangeScale__000.png").convert_alpha()
+        # self.image = pygame.transform.scale(self.original_image, (0.33 * radius, 1.05 * radius))
+        # self.velocity = pygame.Vector2(x, y)
+        
+        # self.image = pygame.transform.rotate(self.image, angle)
+        # self.mask =  pygame.mask.from_surface(self.image)
+        # self.mask_image = self.mask.to_surface(setcolor=(0, 255, 0, 100), unsetcolor=(0, 0, 0, 0))
+        # self.rect = self.image.get_rect(center=(x, y))
+
 
     def update(self, dt):
         self.position += (self.velocity * dt)

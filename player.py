@@ -9,9 +9,9 @@ class Player(CircleShape):
         self.original_image = pygame.image.load(image_path).convert_alpha()
         self.original_image = pygame.transform.scale(self.original_image, (1.85 * radius, 1.85 * radius))
         self.image = self.original_image
+        self.rect = self.image.get_rect(center=(x, y))
         self.mask = pygame.mask.from_surface(self.image)
         self.mask_image = self.mask.to_surface(setcolor=(0, 255, 0, 100), unsetcolor=(0, 0, 0, 0))
-        self.rect = self.image.get_rect(center=(x, y))
         self.rotation = 0
         self.shot_cooldown = PLAYER_SHOT_COOLDOWN
         self.score = 0
@@ -28,13 +28,6 @@ class Player(CircleShape):
             self.move(dt * -1)
         if keys[pygame.K_SPACE]:
             self.shoot(self.position)
-        
-        self.image = pygame.transform.rotate(self.original_image, self.rotation)
-        self.mask = pygame.transform.rotate(self.original_image, self.rotation)
-        self.rect = self.image.get_rect(center=self.rect.center)
-        self.rect.center = self.position
-        
-
 
         if self.shot_cooldown > 0:
             self.shot_cooldown -= dt
@@ -47,9 +40,7 @@ class Player(CircleShape):
         self.rotation += PLAYER_TURN_SPEED * dt
         # Rotate image around its center
         self.image = pygame.transform.rotate(self.original_image, self.rotation)
-        self.mask = pygame.transform.rotate(self.original_image, self.rotation)
         self.rect = self.image.get_rect(center=self.rect.center)
-        self.mask = pygame.mask.from_surface(self.image)
     
     def move(self, dt):
         forward = pygame.Vector2(0, -1).rotate(-self.rotation)
@@ -77,7 +68,8 @@ class Shot(CircleShape):
         self.image = pygame.transform.scale(self.original_image, (0.33 * radius, 1.05 * radius))
         self.velocity = pygame.Vector2(x, y)
         self.image = pygame.transform.rotate(self.image, angle)
-        self.mask =  pygame.mask.from_surface(self.original_image)
+        self.mask =  pygame.mask.from_surface(self.image)
+        self.mask_image = self.mask.to_surface(setcolor=(0, 255, 0, 100), unsetcolor=(0, 0, 0, 0))
         self.rect = self.image.get_rect(center=(x, y))
 
     def update(self, dt):
@@ -87,3 +79,5 @@ class Shot(CircleShape):
     def draw(self, screen):
         screen.blit(self.image, self.rect)
         pygame.draw.circle(screen, (0, 255, 0), (int(self.position.x), int(self.position.y)), self.radius, 1)
+        mask_position = (self.rect.x, self.rect.y)
+        screen.blit(self.mask_image, mask_position)
