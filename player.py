@@ -26,7 +26,7 @@ class Player(CircleShape):
         if keys[pygame.K_s] or keys[pygame.K_DOWN]:
             self.move(dt * -1)
         if keys[pygame.K_SPACE]:
-            self.shoot(self.position)
+            self.shoot((0, -40))
 
         if self.shot_cooldown > 0:
             self.shot_cooldown -= dt
@@ -62,7 +62,12 @@ class Player(CircleShape):
         if self.shot_cooldown <= 0:
             laser_sound.play()
             self.shot_cooldown += PLAYER_SHOT_COOLDOWN
-            shot = Shot(position.x, position.y, SHOT_RADIUS, self.rotation)
+            
+            offset_vector = pygame.Vector2(position).rotate(-self.rotation)
+            spawn_position = pygame.Vector2(self.position) + offset_vector
+
+            shot = Shot(spawn_position.x, spawn_position.y, SHOT_RADIUS, self.rotation)
+            
             shot_direction = pygame.Vector2(0, -1).rotate(-self.rotation)
             shot.velocity = shot_direction * PLAYER_SHOOT_SPEED
 
