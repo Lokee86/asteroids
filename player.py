@@ -12,6 +12,9 @@ class Player(CircleShape):
         self.rect = self.image.get_rect(center=(x, y))
         self.mask = pygame.mask.from_surface(self.image)
         self.rotation = 0
+        self.acceleration = PLAYER_ACCELERATION  # Define this in your constants
+        self.max_speed = PLAYER_MAX_SPEED  # Define this in your constants
+        self.deceleration = PLAYER_DECELERATION  # Define this in your constants
         self.shot_cooldown = PLAYER_SHOT_COOLDOWN
         self.score = 0  
 
@@ -21,10 +24,14 @@ class Player(CircleShape):
             self.rotate(dt)
         if keys[pygame.K_d] or keys[pygame.K_RIGHT]:
             self.rotate(dt * -1)
+        
         if keys[pygame.K_w] or keys[pygame.K_UP]:
-            self.move(dt)
-        if keys[pygame.K_s] or keys[pygame.K_DOWN]:
-            self.move(dt * -1)
+            self.apply_acceleration(dt)
+        elif keys[pygame.K_s] or keys[pygame.K_DOWN]:
+            self.apply_acceleration(dt, reverse=True)
+        else:
+            self.apply_deceleration(dt)
+
         if keys[pygame.K_SPACE]:
             self.shoot((0, -40))
 
@@ -32,6 +39,10 @@ class Player(CircleShape):
             self.shot_cooldown -= dt
         if self.shot_cooldown < 0:
             self.shot_cooldown = 0
+
+        # Update position based on velocity
+        self.position += self.velocity * dt
+        self.rect.center = self.position
 
         # Rotate the player image
         self.image = pygame.transform.rotate(self.original_image, self.rotation)
@@ -46,10 +57,23 @@ class Player(CircleShape):
         self.image = pygame.transform.rotate(self.original_image, self.rotation)
         self.rect = self.image.get_rect(center=self.position)
     
-    def move(self, dt):
-        forward = pygame.Vector2(0, -1).rotate(-self.rotation)
-        self.position += forward * PLAYER_SPEED * dt
-        self.rect.center = self.position  # Ensure rect center matches the position
+    def apply_acceleration(self, dt, reverse=False):
+        direction = pygame.Vector2(0, -1).rotate(-self.rotation)
+        if reverse:
+            direction = -direction
+        
+        self.velocity += direction * self.acceleration * dt
+        # Cap the speed to the max speed
+        if self.velocity.length() > self.max_speed:
+            self.velocity.scale_to_length(self.max_speed)
+
+    def apply_deceleration(self, dt):
+        if self.velocity.length() > 0:
+            decel_vector = self.velocity.normalize() * self.deceleration * dt
+            if decel_vector.length() > self.velocity.length():
+                self.velocity = pygame.Vector2(0, 0)
+            else:
+                self.velocity -= decel_vector
 
     def draw(self, screen):
         # Draw the player's image
