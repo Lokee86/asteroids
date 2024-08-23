@@ -21,6 +21,19 @@ class Asteroid(CircleShape):
 
     def update(self, dt):
         self.position += (self.velocity * dt)
+        
+            # Wrap around the screen horizontally
+        if self.position.x > SCREEN_WIDTH + self.radius:
+            self.position.x = 0 - self.radius
+        elif self.position.x < 0 - self.radius:
+            self.position.x = SCREEN_WIDTH + self.radius
+
+        # Wrap around the screen vertically
+        if self.position.y > SCREEN_HEIGHT + self.radius:
+            self.position.y = 0 - self.radius
+        elif self.position.y < 0 - self.radius:
+            self.position.y = SCREEN_HEIGHT + self.radius
+
         self.rect.center = self.position
 
     def draw(self, screen):

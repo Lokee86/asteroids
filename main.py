@@ -54,7 +54,7 @@ def main():
     
     
     player = Player((SCREEN_WIDTH / 2),(SCREEN_HEIGHT / 2), PLAYER_RADIUS)
-    asteroid_field = AsteroidField()
+    asteroid_field = AsteroidField(asteroids)
 
     game_over_check = False
     game_over_sound = False

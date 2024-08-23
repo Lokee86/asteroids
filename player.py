@@ -53,6 +53,19 @@ class Player(CircleShape):
 
         # Update position based on velocity
         self.position += self.velocity * dt
+        
+        # Wrap around the screen horizontally
+        if self.position.x > SCREEN_WIDTH:
+            self.position.x = 0
+        elif self.position.x < 0:
+            self.position.x = SCREEN_WIDTH
+
+        # Wrap around the screen vertically
+        if self.position.y > SCREEN_HEIGHT:
+            self.position.y = 0
+        elif self.position.y < 0:
+            self.position.y = SCREEN_HEIGHT
+
         self.rect.center = self.position
 
         # Rotate the player image
