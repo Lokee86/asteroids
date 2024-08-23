@@ -75,9 +75,10 @@ def main():
             if event.type == pygame.QUIT:
                 exit()
             
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_p or event.key == pygame.K_t:  # Press 'P' or 'T'(timeout) to initiate pause
-                    paused = not paused
+            if event.type == pygame.KEYDOWN:
+                if not game_over_check:                
+                    if event.key == pygame.K_p or event.key == pygame.K_t:  # Press 'P' or 'T'(timeout) to initiate pause
+                        paused = not paused
 
                 if game_over_check and event.key == pygame.K_r:
                     reset_game(player, asteroids, shots, updateable, drawable)  # Reset the game if "R" is pressed
