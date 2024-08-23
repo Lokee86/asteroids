@@ -4,10 +4,10 @@ from constants import *
 from sound.sound import *
 
 class Player(CircleShape):
-    def __init__(self, x, y, radius, image_path):
+    def __init__(self, x, y, radius):
         super().__init__(x, y, radius)
-        self.original_image = pygame.image.load(image_path).convert_alpha()
-        self.original_image = pygame.transform.scale(self.original_image, (1.85 * radius, 1.85 * radius))
+        self.original_image = pygame.image.load(PLAYER_IMAGE).convert_alpha()
+        self.original_image = pygame.transform.scale(self.original_image, (1.3 * radius, 1.6 * radius))
         self.image = self.original_image
         self.rect = self.image.get_rect(center=(x, y))
         self.mask = pygame.mask.from_surface(self.image)
@@ -16,7 +16,15 @@ class Player(CircleShape):
         self.max_speed = PLAYER_MAX_SPEED  # Define this in your constants
         self.deceleration = PLAYER_DECELERATION  # Define this in your constants
         self.shot_cooldown = PLAYER_SHOT_COOLDOWN
-        self.score = 0  
+        self.score = 0
+
+        self.afterburner_frames = [pygame.image.load(frame).convert_alpha() for frame in AFTER_BURNER_FRAMES]
+        self.afterburner_frames = [pygame.transform.scale(frame, (0.75 * radius, 0.5 * radius)) for frame in self.afterburner_frames]
+        self.afterburner_active = False
+        self.afterburner_frame_index = 0
+        self.afterburner_animation_speed = 20  # Adjust as needed
+        self.afterburner_timer = 0
+        self.afterburner_offset = pygame.Vector2(0, 60)
 
     def update(self, dt):
         keys = pygame.key.get_pressed()
@@ -27,10 +35,13 @@ class Player(CircleShape):
         
         if keys[pygame.K_w] or keys[pygame.K_UP]:
             self.apply_acceleration(dt)
+            self.afterburner_active = True
         elif keys[pygame.K_s] or keys[pygame.K_DOWN]:
-            self.apply_acceleration(dt, reverse=True)
+            self.apply_acceleration(dt * -1)
+            self.afterburner_active = False
         else:
             self.apply_deceleration(dt)
+            self.afterburner_active = False
 
         if keys[pygame.K_SPACE]:
             self.shoot((0, -40))
@@ -51,17 +62,27 @@ class Player(CircleShape):
         # Update the mask after rotation
         self.mask = pygame.mask.from_surface(self.image)
 
+        # update the afterburner if active
+        if self.afterburner_active:
+            self.afterburner_timer += dt * self.afterburner_animation_speed
+            if self.afterburner_timer >= 1:
+                self.afterburner_frame_index = (self.afterburner_frame_index + 1) % len(self.afterburner_frames)
+                if self.afterburner_frame_index == 0:
+                    # Advance through the first two frames only once
+                    self.afterburner_frame_index += 1
+                else:
+                    # Loop the remaining frames
+                    self.afterburner_frame_index = 1 + (self.afterburner_frame_index - 1 + 1) % (len(self.afterburner_frames) - 1)
+                self.afterburner_timer = 0
+
     def rotate(self, dt):
         self.rotation += PLAYER_TURN_SPEED * dt
         # Rotate image around its center
         self.image = pygame.transform.rotate(self.original_image, self.rotation)
         self.rect = self.image.get_rect(center=self.position)
     
-    def apply_acceleration(self, dt, reverse=False):
+    def apply_acceleration(self, dt):
         direction = pygame.Vector2(0, -1).rotate(-self.rotation)
-        if reverse:
-            direction = -direction
-        
         self.velocity += direction * self.acceleration * dt
         # Cap the speed to the max speed
         if self.velocity.length() > self.max_speed:
@@ -79,8 +100,26 @@ class Player(CircleShape):
         # Draw the player's image
         screen.blit(self.image, self.rect)
 
+        # Draw the afterburner if active
+        if self.afterburner_active:
+            # Get the current afterburner frame
+            afterburner_image = self.afterburner_frames[self.afterburner_frame_index]
+
+            # Rotate the afterburner image to match the player's rotation
+            rotated_afterburner = pygame.transform.rotate(afterburner_image, self.rotation)
+
+            # Calculate the offset for the afterburner (e.g., behind the player)
+            offset_rotated = self.afterburner_offset.rotate(-self.rotation)
+
+            # Calculate the position for the afterburner
+            afterburner_position = self.position + offset_rotated
+
+            # Create a rect for the rotated afterburner at the calculated position
+            afterburner_rect = rotated_afterburner.get_rect(center=afterburner_position)
+            screen.blit(rotated_afterburner, afterburner_rect)
+
         # Draw the green circle around the player's image for debugging
-        # pygame.draw.circle(screen, (0, 255, 0), (int(self.position.x), int(self.position.y)), self.radius, 1)
+        #pygame.draw.circle(screen, (0, 255, 0), (int(self.position.x), int(self.position.y)), self.radius, 1)
 
     def shoot(self, position):
         if self.shot_cooldown <= 0:
@@ -98,7 +137,7 @@ class Player(CircleShape):
 class Shot(CircleShape):
     def __init__(self, x, y, radius, angle):
         super().__init__(x, y, radius)
-        self.original_image = pygame.image.load("graphics/OrangeScale__000.png").convert_alpha()
+        self.original_image = pygame.image.load(BULLET_IMAGE).convert_alpha()
         self.image = pygame.transform.scale(self.original_image, (0.33 * radius, 1.05 * radius))
         self.velocity = pygame.Vector2(x, y)
         self.image = pygame.transform.rotate(self.image, angle)

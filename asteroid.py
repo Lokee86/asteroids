@@ -8,13 +8,7 @@ class Asteroid(CircleShape):
         super().__init__(x, y, radius)
         
         self.size_index = radius // ASTEROID_MIN_RADIUS
-        asteroid_images = [
-            ("graphics/asteroid1.png", 1),
-            ("graphics/asteroid2.png", 2),
-            ("graphics/asteroid3.png", 3),
-            ("graphics/asteroid4.png", 4),
-        ]
-        random_rock = random.choice(asteroid_images)
+        random_rock = random.choice(ASTEROID_IMAGES)
         self.original_image = pygame.image.load(random_rock[0]).convert_alpha()
         self.image = pygame.transform.scale(self.original_image, (1.8 * radius, 1.8 * radius))
         self.velocity = pygame.Vector2(x, y)

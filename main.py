@@ -53,7 +53,7 @@ def main():
     AsteroidField.containers = (updateable,)
     
     
-    player = Player((SCREEN_WIDTH / 2),(SCREEN_HEIGHT / 2), PLAYER_RADIUS, "graphics/player.png")
+    player = Player((SCREEN_WIDTH / 2),(SCREEN_HEIGHT / 2), PLAYER_RADIUS)
     asteroid_field = AsteroidField()
 
     game_over_check = False

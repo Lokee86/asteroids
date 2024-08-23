@@ -17,3 +17,14 @@ PLAYER_SHOOT_SPEED = 700
 PLAYER_SHOT_COOLDOWN = 0.2
 
 FRAME_DURATION = 100
+
+PLAYER_IMAGE = "graphics/player.png"
+BULLET_IMAGE = "graphics/OrangeScale__000.png"
+AFTER_BURNER_FRAMES = ["graphics/blue_afterburner00.png",
+                       "graphics/blue_afterburner01.png",
+                       "graphics/blue_afterburner02.png",
+                       "graphics/blue_afterburner03.png",]
+ASTEROID_IMAGES = [("graphics/asteroid1.png", 1),
+                   ("graphics/asteroid2.png", 2),
+                   ("graphics/asteroid3.png", 3),
+                   ("graphics/asteroid4.png", 4),]
