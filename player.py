@@ -7,7 +7,7 @@ class Player(CircleShape):
     def __init__(self, x, y, radius):
         super().__init__(x, y, radius)
         self.original_image = pygame.image.load(PLAYER_IMAGE).convert_alpha()
-        self.original_image = pygame.transform.scale(self.original_image, (1.3 * radius, 1.6 * radius))
+        self.original_image = pygame.transform.scale(self.original_image, (1 * radius, 1.6 * radius))
         self.image = self.original_image
         self.rect = self.image.get_rect(center=(x, y))
         self.mask = pygame.mask.from_surface(self.image)
@@ -19,7 +19,7 @@ class Player(CircleShape):
         self.score = 0
 
         self.afterburner_frames = [pygame.image.load(frame).convert_alpha() for frame in AFTER_BURNER_FRAMES]
-        self.afterburner_frames = [pygame.transform.scale(frame, (0.75 * radius, 0.5 * radius)) for frame in self.afterburner_frames]
+        self.afterburner_frames = [pygame.transform.scale(frame, (0.6 * radius, 0.5 * radius)) for frame in self.afterburner_frames]
         self.afterburner_active = False
         self.afterburner_frame_index = 0
         self.afterburner_animation_speed = 20  # Adjust as needed
