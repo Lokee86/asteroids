@@ -12,7 +12,8 @@ class Asteroid(CircleShape):
         self.original_image = pygame.image.load(random_rock[0]).convert_alpha()
         self.image = pygame.transform.scale(self.original_image, (1.8 * radius, 1.8 * radius))
         self.velocity = pygame.Vector2(x, y)
-        
+        self.lifetime = 0
+
         self.angle = pygame.Vector2(0, -1).angle_to(self.velocity)
         self.image = pygame.transform.rotate(self.image, self.angle)
         self.mask = pygame.mask.from_surface(self.image)
@@ -22,20 +23,33 @@ class Asteroid(CircleShape):
     def update(self, dt):
         self.position += (self.velocity * dt)
         
-            # Wrap around the screen horizontally
+        # Wrap around the screen horizontally
         if self.position.x > SCREEN_WIDTH + self.radius:
-            self.position.x = 0 - self.radius
+            if self.radius == ASTEROID_MIN_RADIUS and self.lifetime > 5:
+                self.kill()
+            elif self.lifetime > 5: 
+                self.position.x = 0 - self.radius
         elif self.position.x < 0 - self.radius:
-            self.position.x = SCREEN_WIDTH + self.radius
+            if self.radius == ASTEROID_MIN_RADIUS and self.lifetime > 5:
+                self.kill()
+            elif self.lifetime > 5: 
+                self.position.x = SCREEN_WIDTH + self.radius
 
         # Wrap around the screen vertically
         if self.position.y > SCREEN_HEIGHT + self.radius:
-            self.position.y = 0 - self.radius
+            if self.radius == ASTEROID_MIN_RADIUS and self.lifetime > 5:
+                self.kill()
+            elif self.lifetime > 5: 
+                self.position.y = 0 - self.radius
         elif self.position.y < 0 - self.radius:
-            self.position.y = SCREEN_HEIGHT + self.radius
+            if self.radius == ASTEROID_MIN_RADIUS and self.lifetime > 5:
+                self.kill()
+            elif self.lifetime > 5: 
+                self.position.y = SCREEN_HEIGHT + self.radius
 
         self.rect.center = self.position
-
+        self.lifetime += dt
+    
     def draw(self, screen):
         screen.blit(self.image, self.rect)
         # Draw the green circle around the asteroid image for debugging

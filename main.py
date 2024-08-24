@@ -3,6 +3,7 @@ from constants import *
 print("Starting asteroids!")
 pygame.init()
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+pygame.display.set_caption("Asteroids")
 background = pygame.image.load("graphics/background.png").convert_alpha()
 from asteroid import Asteroid
 from asteroidfield import AsteroidField
