@@ -44,7 +44,7 @@ class Asteroid(CircleShape):
         elif self.position.y < 0 - self.radius:
             if self.radius == ASTEROID_MIN_RADIUS and self.lifetime > 5:
                 self.kill()
-            elif self.lifetime > 5: 
+            elif self.lifetime > 1: 
                 self.position.y = SCREEN_HEIGHT + self.radius
 
         self.rect.center = self.position

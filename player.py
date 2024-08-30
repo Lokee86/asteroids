@@ -24,7 +24,7 @@ class Player(CircleShape):
         self.afterburner_frame_index = 0
         self.afterburner_animation_speed = 20  # Adjust as needed
         self.afterburner_timer = 0
-        self.afterburner_offset = pygame.Vector2(0, 60)
+        self.afterburner_offset = pygame.Vector2(0, 45)
 
     def update(self, dt):
         keys = pygame.key.get_pressed()
